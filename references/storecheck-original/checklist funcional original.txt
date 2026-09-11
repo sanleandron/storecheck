@@ -1,0 +1,80 @@
+Este checklist estandarizado está diseñado para realizar inteligencia competitiva en campo (store checks) en formatos de Hard Discount (como D1, Ara o Isimo). Permite recopilar datos objetivos y comparables entre varios evaluadores.
+
+Ficha Técnica de la Visita
+(Completar al inicio de cada evaluación)
+
+Evaluador: ___________________________
+
+Fecha / Hora: //2026 — : AM/PM
+
+Cadena / Competidor: __________________
+
+Ubicación / Ciudad: ___________________
+
+Nivel socioeconómico de la zona: [ ] Alto [ ] Medio [ ] Popular
+
+Checklist de Evaluación de Hard Discount
+1. Infraestructura, Layout y Densidad
+Área estimada del piso de venta: M² aproximados (ej. 250 - 400 m²).
+
+Distribución de pasillos: Número de pasillos principales y ancho (¿permiten el cruce fluido de dos carritos?).
+
+Línea de Cajas (POS): Cantidad de cajas totales vs. cajas operativas en hora pico.
+
+Mobiliario y Exhibición:
+
+¿Utilizan estantería metálica simple, palets en suelo o góndolas?
+
+¿Se exhibe el producto directamente en su caja de cartón lista para vender (SRP - Shelf Ready Packaging)?
+
+Cadena de Frío: Número de neveras horizontales/verticales (lácteos, embutidos, congelados).
+
+Iluminación y Acabados: Tipo de piso (concreto pulido, baldosas simples), iluminación LED de bajo consumo, señaléctica.
+
+2. Surtido, Marcas y Arquitectura de Portafolio
+Estructura de SKUs: Estimación total de productos en tienda (el estándar de hard discount ronda entre 800 y 1,500 SKUs).
+
+Participación de Marca Propia vs. Marca Nacional: Porcentaje aproximado visible en anaquel (ej. 70% Marca Propia / 30% Marca Líder).
+
+Categorías ClavePresentes:
+
+Alimentos secos y canasta básica.
+
+Frescos (carnes, frutas/verduras empacadas).
+
+Cuidado personal y del hogar.
+
+Bebidas y snacks.
+
+"El Pasillo Especial" / "In & Out": ¿Cuentan con zona de productos de oportunidad/temporada (hogar, electrodomésticos pequeños, textil)? Frecuencia de rotación observada.
+
+3. Estrategia de Precios, Promociones y Comunicación
+Diferencial de Precio: Comparativa de precio de 3 productos clave de la canasta básica frente a marcas comerciales tradicionales.
+
+Formato de Precios: Marcado en caja/cinta de anaquel o etiquetas de gran tamaño impresas en blanco y negro.
+
+Mecanismos Promocionales: ¿Existen descuentos por volumen, liquidaciones de inventario "In & Out", o se mantiene un concepto estricto de EDLP (Precio Bajo Todos los Días)?
+
+Señaléctica Comercial: Mensajes de propuesta de valor en paredes (ej. "Calidad garantizada", "Ahorro directo").
+
+4. Operación, Logística y Eficiencia Interna
+Personal en Tienda: Número total de empleados visibles por turno y polivalencia (¿el mismo empleado cobra, surte y limpia?).
+
+Proceso de Reabastecimiento: Presencia de estibas/palets en pasillos durante horario comercial; velocidad de reposición.
+
+Nivel de Agotados (Out of Stock): Porcentaje estimado de huecos vacíos en góndola.
+
+Manejo de Merma: Tratamiento de productos golpeados, perecederos cercanos a vencer o empaques dañados.
+
+5. Comportamiento del Consumidor y Cesta de Compra
+Perfil del Cliente: Tipología predominante (amas de casa, familias, revendedores, estudiantes).
+
+Tamaño de la Cesta (Ticket Promedio):
+
+Tipo de compra: [ ] Reabastecimiento semanal/quincenal [ ] Compra de cercanía/reposición del día.
+
+Unidades promedio por carrito/cesta: [ ] 1 a 5 ítems [ ] 6 a 15 ítems [ ] Más de 15 ítems.
+
+Tráfico y Tiempos: Tiempo promedio de espera en fila de caja en hora pico.
+
+Métodos de Pago: Proporción observada entre efectivo, tarjetas de débito/crédito y transferencias/pagos digitales.

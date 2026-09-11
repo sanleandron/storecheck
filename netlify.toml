@@ -1,0 +1,24 @@
+# ============================================================
+# StoreCheck HD — Configuración de despliegue en Netlify
+# Modo recomendado: deploy por Git (Netlify construye el build)
+# ============================================================
+
+[build]
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Se copian desde el dashboard de Netlify (no van en este archivo).
+  # VITE_SUPABASE_URL=
+  # VITE_SUPABASE_ANON_KEY=
+
+# Redirige todas las rutas a index.html para que funcione el routing SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-ContentType-Options = "nosniff"
