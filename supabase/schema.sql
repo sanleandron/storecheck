@@ -153,10 +153,13 @@ alter table public.sync_events enable row level security;
 alter table public.audit_history enable row level security;
 
 -- Catálogos: lectura autenticada
+drop policy if exists "catálogos lectura autenticada" on public.chains;
 create policy "catálogos lectura autenticada"
   on public.chains for select to authenticated using (true);
+drop policy if exists "catálogos lectura autenticada" on public.countries;
 create policy "catálogos lectura autenticada"
   on public.countries for select to authenticated using (true);
+drop policy if exists "catálogos lectura autenticada" on public.currencies;
 create policy "catálogos lectura autenticada"
   on public.currencies for select to authenticated using (true);
 
@@ -171,37 +174,44 @@ returns boolean language sql stable as $$
 $$;
 
 -- Auditorías: un usuario ve las propias; el admin ve todas
+drop policy if exists "auditorías: select" on public.audits;
 create policy "auditorías: select"
   on public.audits for select to authenticated
   using (user_id = auth.uid() or public.is_admin());
 
+drop policy if exists "auditorías: insert" on public.audits;
 create policy "auditorías: insert"
   on public.audits for insert to authenticated
   with check (user_id = auth.uid());
 
+drop policy if exists "auditorías: update" on public.audits;
 create policy "auditorías: update"
   on public.audits for update to authenticated
   using (user_id = auth.uid() or public.is_admin());
 
 -- Evidencia: propietaria vía auditoría
+drop policy if exists "evidencia: select propia" on public.media_evidence;
 create policy "evidencia: select propia"
   on public.media_evidence for select to authenticated
   using (
     exists (select 1 from public.audits a where a.id = media_evidence.audit_id and a.user_id = auth.uid())
   );
 
+drop policy if exists "evidencia: insert propia" on public.media_evidence;
 create policy "evidencia: insert propia"
   on public.media_evidence for insert to authenticated
   with check (
     exists (select 1 from public.audits a where a.id = media_evidence.audit_id and a.user_id = auth.uid())
   );
 
+drop policy if exists "evidencia: update propia" on public.media_evidence;
 create policy "evidencia: update propia"
   on public.media_evidence for update to authenticated
   using (
     exists (select 1 from public.audits a where a.id = media_evidence.audit_id and a.user_id = auth.uid())
   );
 
+drop policy if exists "evidencia: delete propia" on public.media_evidence;
 create policy "evidencia: delete propia"
   on public.media_evidence for delete to authenticated
   using (
@@ -209,18 +219,21 @@ create policy "evidencia: delete propia"
   );
 
 -- Sync events: propios
+drop policy if exists "sync: select propio" on public.sync_events;
 create policy "sync: select propio"
   on public.sync_events for select to authenticated
   using (
     exists (select 1 from public.audits a where a.id = sync_events.audit_id and a.user_id = auth.uid())
   );
 
+drop policy if exists "sync: insert propio" on public.sync_events;
 create policy "sync: insert propio"
   on public.sync_events for insert to authenticated
   with check (
     exists (select 1 from public.audits a where a.id = sync_events.audit_id and a.user_id = auth.uid())
   );
 
+drop policy if exists "sync: update propio" on public.sync_events;
 create policy "sync: update propio"
   on public.sync_events for update to authenticated
   using (
@@ -228,12 +241,14 @@ create policy "sync: update propio"
   );
 
 -- Historial: propios
+drop policy if exists "history: select propio" on public.audit_history;
 create policy "history: select propio"
   on public.audit_history for select to authenticated
   using (
     exists (select 1 from public.audits a where a.id = audit_history.audit_id and a.user_id = auth.uid())
   );
 
+drop policy if exists "history: insert propio" on public.audit_history;
 create policy "history: insert propio"
   on public.audit_history for insert to authenticated
   with check (
