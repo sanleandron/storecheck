@@ -81,6 +81,11 @@ npm run build
 netlify deploy --prod --dir=dist
 ```
 
+Alternativa todo-en-uno (PowerShell) tras completar `.env`:
+```bash
+.\scripts\deploy.ps1
+```
+
 ### 4. Probar en el teléfono
 1. Abre la URL HTTPS en el navegador del móvil.
 2. Regístrate/entra.
