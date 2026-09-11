@@ -55,9 +55,10 @@ Copia `.env.example` a `.env` y completa los valores. Nunca subas secretos al re
 
 ### 1. Supabase
 - Crea un proyecto en https://supabase.com.
-- Ejecuta `supabase/schema.sql` en **SQL Editor** (crea tablas, RLS y catálogos).
-- Activa el proveedor Email en **Authentication → Providers**.
-- (Opcional) Crea el bucket `evidence` en **Storage** (el código lo crea solo con `public: true`).
+- Ejecuta `supabase/schema.sql` en **SQL Editor** (crea tablas, RLS y catálogos). El script es idempotente: puedes re-ejecutarlo sin errores.
+- Activa el proveedor Email en **Authentication → Providers** (requerido para login/registro).
+- Recomendado para pruebas: desactiva **"Confirm email"** en *Authentication → Sign In / Tokens* — si queda activo, Supabase aplica un límite de envío de correos (`over_email_send_rate_limit`) que puede frenar registros consecutivos.
+- El bucket de Storage `evidence` (fotos/audios) lo crea la app automáticamente como público; puedes crearlo manualmente en **Storage → New bucket → evidence → público**.
 
 ### 2. Variables de entorno
 Copia `.env.example` a `.env` y completa los valores de tu proyecto:

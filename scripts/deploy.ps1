@@ -22,6 +22,21 @@ if (!$url -or !$key) {
 }
 Write-Host "  URL detectada: $($url.Substring(0, [Math]::Min(20, $url.Length)))..."
 
+# 1b) Verificación del esquema (tablas Supabase)
+Write-Host "- Verificando esquema en Supabase..." -ForegroundColor Cyan
+$env:SB_URL = $url
+$env:SB_KEY = $key
+node -e "const r=await fetch(process.env.SB_URL+'/rest/v1/audits?select=id&limit=1',{headers:{apikey:process.env.SB_KEY,Authorization:'Bearer '+process.env.SB_KEY}}); process.exit(r.status===200?0:(r.status===404?2:3))" --input-type=module 2>&1
+$code = $LASTEXITCODE
+Remove-Item Env:SB_URL -ErrorAction SilentlyContinue
+Remove-Item Env:SB_KEY -ErrorAction SilentlyContinue
+if ($code -eq 2) {
+  Fail "El esquema NO está aplicado en Supabase. Ejecuta supabase/schema.sql en el SQL Editor del panel y vuelve a intentar."
+} elseif ($code -eq 3) {
+  Fail "No se pudo conectar a Supabase. Revisa las credenciales y la red."
+}
+Write-Host "  Esquema OK (tabla audits accesible)." -ForegroundColor Green
+
 # 2) Instalar dependencias (si hace falta)
 Write-Host "- Instalando dependencias..." -ForegroundColor Cyan
 npm install 2>&1 | Out-Null
