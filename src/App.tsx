@@ -17,10 +17,19 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   return children;
 }
 
+// En GitHub Pages la app vive bajo una subruta (p. ej. /storecheck/).
+// Derivamos el basename del directorio base de la URL actual para que la
+// navegación (BrowserRouter) funcione tanto en local como en Pages.
+function detectBase(): string {
+  const path = window.location.pathname;
+  if (path.startsWith('/storecheck')) return '/storecheck';
+  return '';
+}
+
 export default function App() {
   initSession();
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={detectBase()}>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
