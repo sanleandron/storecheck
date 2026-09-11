@@ -40,15 +40,51 @@ Copia `.env.example` a `.env` y completa los valores. Nunca subas secretos al re
 
 ## Funcionalidad implementada (MVP)
 
-- **Auth local** con roles Auditor y Administrador.
+- **Auth** con Supabase Auth (email/contraseña) y roles Auditor/Administrador. Modo local de respaldo si no hay backend.
 - **Ficha técnica** con GPS, fecha/hora, cadena, tienda, país, moneda y NSE.
 - **Checklist versionado** de 5 módulos (Infraestructura, Surtido, Precios, Operación, Cliente) con tipos de pregunta (texto, número, porcentaje, selección, múltiple).
 - **Progreso** por módulo y general con validación de campos obligatorios.
 - **Comparativa de precios** (mínimo 3 observaciones) con precio normalizado por unidad.
-- **Evidencia** de fotos y notas de audio (audio opcional).
+- **Evidencia** de fotos y notas de audio (audio opcional) subida a Supabase Storage.
 - **Guardado automático offline** en IndexedDB (Dexie) y recuperación de borradores.
+- **Sincronización offline-first**: al recuperar conexión, las auditorías y evidencia pendientes se suben a Supabase (idempotente por UUID).
 - **Panel administrativo** de validación (En revisión → Validada / Devuelta).
 - **Comparación** de tiendas y **exportación CSV**.
+
+## Despliegue en producción (Netlify + Supabase)
+
+### 1. Supabase
+- Crea un proyecto en https://supabase.com.
+- Ejecuta `supabase/schema.sql` en **SQL Editor** (crea tablas, RLS y catálogos).
+- Activa el proveedor Email en **Authentication → Providers**.
+- (Opcional) Crea el bucket `evidence` en **Storage** (el código lo crea solo con `public: true`).
+
+### 2. Variables de entorno
+Copia `.env.example` a `.env` y completa los valores de tu proyecto:
+```
+VITE_SUPABASE_URL=https://<tu-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY=<tu-anon-key>
+```
+Estas variables también se configuran como **Build Environment** en el dashboard de Netlify (nunca en el repositorio).
+
+### 3. Netlify (despliegue por Git)
+1. Sube este repositorio a GitHub.
+2. En Netlify: **Add new site → Import an existing project** y conecta el repo.
+3. Build command: `npm ci && npm run build`; Publish directory: `dist`.
+4. En **Site settings → Environment variables** añade `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
+5. Deploy. Netlify da una URL `https://<sitio>.netlify.app` con HTTPS automático.
+
+Para desplegar desde tu terminal (opcional):
+```bash
+netlify login
+npm run build
+netlify deploy --prod --dir=dist
+```
+
+### 4. Probar en el teléfono
+1. Abre la URL HTTPS en el navegador del móvil.
+2. Regístrate/entra.
+3. "Agregar a pantalla de inicio" (Android/Chrome) o "Instalar aplicación" para usarla como PWA.
 
 ## Estructura
 

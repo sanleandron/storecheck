@@ -34,3 +34,24 @@
 **Contexto:** Se requiere control de calidad de las auditorías.
 **Decisión:** El Administrador valida (En revisión → Validada / Devuelta). El Auditor no valida su propio trabajo. La validada queda bloqueada.
 **Consecuencias:** Flujo de estados más complejo; protege la comparabilidad.
+
+## ADR-006 — Auth real con Supabase Auth
+
+**Estado:** Aceptado.
+**Contexto:** El login inicial era local (localStorage) sin verificación de identidad.
+**Decisión:** Reemplazar por Supabase Auth (email + contraseña) con rol Auditor/Admin derivado de `user_metadata.role`. Persistencia de sesión con `persistSession: true`.
+**Consecuencias:** Requiere proyecto Supabase y variables `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`. Se conserva un modo "local" de respaldo cuando Supabase no está configurado.
+
+## ADR-007 — Sincronización offline-first con Supabase
+
+**Estado:** Aceptado.
+**Contexto:** La app debe operar sin conexión y consolidar datos al volver a línea.
+**Decisión:** Dexie sigue siendo la fuente local (offline); al haber conexión se sincroniza cada auditoría a la tabla `audits` con **upsert por UUID** (idempotente, sin duplicados) y la evidencia a **Supabase Storage** (bucket `evidence`). Seguimiento de intentos en `sync_events`.
+**Consecuencias:** Los auditorios con `synced: false` se suben al abrir la lista o desde el detalle. Idempotencia garantizada por identificadores UUID generados en el dispositivo.
+
+## ADR-008 — Despliegue a Netlify (PWA por Git)
+
+**Estado:** Aceptado.
+**Contexto:** Se requiere URL pública con HTTPS para instalar la PWA en el móvil.
+**Decisión:** Despliegue de la carpeta `dist/` (build estático) en Netlify. Opción por Git: Netlify ejecuta `npm ci && npm run build`. Redirección SPA vía `netlify.toml`.
+**Consecuencias:** Las variables `VITE_*` se configuran como Build Environment en el dashboard de Netlify (no van en el repositorio).
