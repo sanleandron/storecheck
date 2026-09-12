@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, generateId } from '../db/dexie';
+import { markAuditDirty } from '../lib/sync';
 import type { MediaEvidence as MediaEvidenceType } from '../types';
 
 interface EvidenceCaptureProps {
@@ -41,6 +42,7 @@ export function EvidenceCapture({ auditId, sectionId, questionId }: EvidenceCapt
         status: 'pending',
       };
       await db.media.add(item);
+      await markAuditDirty(auditId);
     };
     reader.readAsDataURL(file);
   };
@@ -69,6 +71,7 @@ export function EvidenceCapture({ auditId, sectionId, questionId }: EvidenceCapt
           status: 'pending',
         };
         await db.media.add(item);
+        await markAuditDirty(auditId);
       };
       reader.readAsDataURL(blob);
       stream.getTracks().forEach((t) => t.stop());

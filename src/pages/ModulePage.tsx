@@ -7,6 +7,7 @@ import { EvidenceCapture } from '../components/EvidenceCapture';
 import { CHECKLIST_VERSION } from '../data/checklist';
 import { db } from '../db/dexie';
 import { sectionProgress, missingRequired } from '../lib/validation';
+import { markAuditDirty } from '../lib/sync';
 import type { AuditAnswer } from '../types';
 
 export function ModulePage() {
@@ -45,6 +46,9 @@ export function ModulePage() {
       answers: next,
       updatedAt: new Date().toISOString(),
     });
+    // Hay cambios locales no sincronizados: marcar la auditoría como pendiente
+    // para que se vuelva a subir a Supabase (por ejemplo al volver a la lista).
+    void markAuditDirty(audit.id);
   };
 
   const missing = missingRequired(section.id, audit.answers);

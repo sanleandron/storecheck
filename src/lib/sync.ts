@@ -45,6 +45,15 @@ async function recordSyncEvent(auditId: string, kind: string, status: string, er
 }
 
 /**
+ * Marca una auditoría como pendiente de sincronizar (synced: false).
+ * Debe llamarse cada vez que se modifica una auditoría localmente para que
+ * los cambios se vuelvan a subir a Supabase en la próxima sincronización.
+ */
+export async function markAuditDirty(auditId: string): Promise<void> {
+  await db.audits.update(auditId, { synced: false });
+}
+
+/**
  * Sube una auditoría a Supabase. Idempotente por UUID: si ya existe,
  * se actualiza (upsert) en lugar de duplicarse.
  */

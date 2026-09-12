@@ -5,6 +5,7 @@ import { AppHeader } from '../components/AppHeader';
 import { Card } from '../components/Card';
 import { db } from '../db/dexie';
 import { createEmptyPriceObservation, normalizePrice } from '../lib/pricing';
+import { markAuditDirty } from '../lib/sync';
 import type { PriceObservation } from '../types';
 
 const CATEGORIES = ['Lácteos', 'Bebidas', 'Snacks', 'Cuidado personal', 'Limpieza', 'Despensa', 'Otro'];
@@ -37,6 +38,7 @@ export function PriceObservations() {
       priceObservations: next,
       updatedAt: new Date().toISOString(),
     });
+    void markAuditDirty(audit.id);
     setEditing(null);
   };
 
@@ -45,6 +47,7 @@ export function PriceObservations() {
       priceObservations: observations.filter((o) => o.id !== obsId),
       updatedAt: new Date().toISOString(),
     });
+    void markAuditDirty(audit.id);
   };
 
   const setField = (key: keyof PriceObservation, value: string | number | boolean) => {

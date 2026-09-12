@@ -24,22 +24,34 @@ export function AuditList() {
   const session = getSession();
   const [syncing, setSyncing] = useState(false);
 
-  useEffect(() => {
-    // Auto-sincroniza en segundo plano las auditorías pendientes al abrir la lista.
-    void syncPendingNow(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const syncPendingNow = async (silent = false) => {
+  const syncPendingNow = async () => {
     if (!isDbAvailable() || syncing) return;
     setSyncing(true);
-    const pendientes = (await db.audits.toArray()).filter((a) => !a.synced);
-    for (const a of pendientes) {
-      await syncAuditWithMedia(a);
+    try {
+      const pendientes = (await db.audits.toArray()).filter((a) => !a.synced);
+      for (const a of pendientes) {
+        await syncAuditWithMedia(a);
+      }
+    } finally {
+      setSyncing(false);
     }
-    setSyncing(false);
-    void silent;
   };
+
+  // Auto-sincroniza las auditorías pendientes (synced: false) al montar la lista
+  // y cuando cambian los datos (p. ej. al volver tras editar un módulo), siempre
+  // que haya conexión.
+  useEffect(() => {
+    if (isDbAvailable()) void syncPendingNow();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audits]);
+
+  // Al recuperar la conexión, trata de sincronizar de nuevo.
+  useEffect(() => {
+    const onOnline = () => void syncPendingNow();
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogout = async () => {
     await signOut();

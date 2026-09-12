@@ -8,6 +8,7 @@ import { isSectionComplete, overallProgress } from '../lib/validation';
 import { syncAuditWithMedia } from '../lib/sync';
 import { isDbAvailable } from '../db/supabase';
 import { useState } from 'react';
+import type { Audit } from '../types';
 
 export function AuditDetail() {
   const { id } = useParams<{ id: string }>();
@@ -31,12 +32,14 @@ export function AuditDetail() {
   const allComplete = sections.every((s) => isSectionComplete(s.id, audit.answers));
 
   const handleSend = async () => {
+    const newStatus: Audit['status'] = allComplete ? 'completa_pendiente' : 'borrador';
     await db.audits.update(audit.id, {
-      status: allComplete ? 'completa_pendiente' : 'borrador',
+      status: newStatus,
       updatedAt: new Date().toISOString(),
     });
+    // Sincronizar con el estado ya actualizado (no el objeto en memoria viejo).
     if (isDbAvailable()) {
-      const r = await syncAuditWithMedia(audit);
+      const r = await syncAuditWithMedia({ ...audit, status: newStatus });
       if (!r.ok) setSyncError(r.error ?? 'Error de sincronización');
     }
     navigate('/auditorias');
