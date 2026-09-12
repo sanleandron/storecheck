@@ -115,6 +115,50 @@ export async function signOut(): Promise<void> {
 }
 
 /**
+ * URL base de la app para enlaces de recuperación de contraseña.
+ * Deriva de la URL actual para funcionar tanto en local como en GitHub Pages
+ * (que se sirve bajo un subpath).
+ */
+function appBaseUrl(): string {
+  const { protocol, host, pathname } = window.location;
+  // En GitHub Pages la app está bajo /storecheck/. Los demás casos sirven desde la raíz.
+  const baseMatch = pathname.match(/^\/([^/]+)/);
+  const hasSubpath = baseMatch && window.location.hostname.endsWith('github.io');
+  return `${protocol}//${host}${hasSubpath ? `/${baseMatch![1]}` : ''}`;
+}
+
+/** Envía el correo de restablecimiento de contraseña. */
+export async function resetPassword(email: string): Promise<{ error?: string }> {
+  if (!isDbAvailable()) {
+    return { error: 'Supabase no configurado. Revisa el archivo .env.' };
+  }
+  const sup = supabase();
+  const redirectTo = `${appBaseUrl()}/actualizar-contrasena`;
+  const { error } = await sup.auth.resetPasswordForEmail(email.trim(), { redirectTo });
+  if (error) return { error: error.message };
+  return {};
+}
+
+/** Establece una nueva contraseña con la sesión de recuperación activa. */
+export async function updatePassword(newPassword: string): Promise<{ error?: string }> {
+  if (!isDbAvailable()) {
+    return { error: 'Supabase no configurado. Revisa el archivo .env.' };
+  }
+  const sup = supabase();
+  const { error } = await sup.auth.updateUser({ password: newPassword });
+  if (error) return { error: error.message };
+  await refreshLocalSession();
+  return {};
+}
+
+/** Indica si la URL contiene un token de recuperación de contraseña (recovery). */
+export function hasRecoveryToken(): boolean {
+  const { hash } = window.location;
+  // Supabase entrega el token en #access_token o #recovery_token / #token_type=recovery
+  return hash.includes('type=recovery') || hash.includes('recovery_token');
+}
+
+/**
  * Compatibilidad: llama refreshLocalSession al inicializar la app para
  * mantener la sesión si el usuario ya tiene una en Supabase.
  */

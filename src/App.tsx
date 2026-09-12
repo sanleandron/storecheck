@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { getSession, initSession } from './lib/auth';
 import { Login } from './pages/Login';
+import { ResetPassword } from './pages/ResetPassword';
 import { AuditList } from './pages/AuditList';
 import { AuditNew } from './pages/AuditNew';
 import { AuditModules } from './pages/AuditModules';
@@ -32,6 +33,7 @@ export default function App() {
     <BrowserRouter basename={detectBase()}>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/actualizar-contrasena" element={<ResetPassword />} />
         <Route
           path="/auditorias"
           element={

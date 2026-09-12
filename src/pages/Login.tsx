@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppHeader } from '../components/AppHeader';
 import { Card } from '../components/Card';
-import { signIn, signUp, signInLocal } from '../lib/auth';
+import { signIn, signUp, signInLocal, resetPassword } from '../lib/auth';
 import { isDbAvailable } from '../db/supabase';
 
 export function Login() {
@@ -16,6 +16,28 @@ export function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Modo recuperación de contraseña
+  const [resetEmail, setResetEmail] = useState('');
+  const [showReset, setShowReset] = useState(false);
+  const [resetMsg, setResetMsg] = useState('');
+
+  const handleReset = async () => {
+    if (!resetEmail.trim()) {
+      setError('Ingresa tu email');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setResetMsg('');
+    const r = await resetPassword(resetEmail.trim());
+    if (r.error) {
+      setError(r.error);
+      setLoading(false);
+      return;
+    }
+    setResetMsg('Te enviamos un correo. Revisa tu bandeja y pulsa el enlace para crear una nueva contraseña.');
+    setLoading(false);
+  };
 
   const handleOnlineSubmit = async () => {
     if (!email.trim() || !password.trim()) {
@@ -61,56 +83,110 @@ export function Login() {
       <div className="content">
         {configured ? (
           <>
-            <Card title={mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}>
-              {mode === 'register' && (
+            {showReset ? (
+              <Card title="Recuperar contraseña">
                 <div className="input-group">
-                  <label>Nombre</label>
+                  <label>Email</label>
                   <input
-                    type="text"
+                    type="email"
+                    autoComplete="email"
                     className="input-control"
-                    placeholder="Nombre completo"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    placeholder="tu@correo.com"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
                   />
                 </div>
-              )}
-              <div className="input-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  autoComplete="email"
-                  className="input-control"
-                  placeholder="tu@correo.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="input-group">
-                <label>Contraseña</label>
-                <input
-                  type="password"
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  className="input-control"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {error && <div className="error-text">{error}</div>}
-              <button className="btn-primary" onClick={handleOnlineSubmit} disabled={loading}>
-                {loading ? 'Espera...' : mode === 'login' ? 'Entrar' : 'Registrarme'}
-              </button>
-            </Card>
-            <div style={{ textAlign: 'center', marginTop: 12 }}>
-              {mode === 'login' ? (
-                <button className="btn-secondary" style={{ margin: 0 }} onClick={() => switchMode('register')}>
-                  ¿No tienes cuenta? Regístrate
+                {error && <div className="error-text">{error}</div>}
+                {resetMsg && (
+                  <div style={{ fontSize: 13, color: 'var(--success)', marginBottom: 10 }}>{resetMsg}</div>
+                )}
+                <button className="btn-primary" onClick={handleReset} disabled={loading}>
+                  {loading ? 'Enviando...' : 'Enviar correo'}
                 </button>
-              ) : (
-                <button className="btn-secondary" style={{ margin: 0 }} onClick={() => switchMode('login')}>
-                  Ya tengo cuenta
+              </Card>
+            ) : (
+              <>
+                <Card title={mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}>
+                  {mode === 'register' && (
+                    <div className="input-group">
+                      <label>Nombre</label>
+                      <input
+                        type="text"
+                        className="input-control"
+                        placeholder="Nombre completo"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </div>
+                  )}
+                  <div className="input-group">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      autoComplete="email"
+                      className="input-control"
+                      placeholder="tu@correo.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>Contraseña</label>
+                    <input
+                      type="password"
+                      autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                      className="input-control"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                  {error && <div className="error-text">{error}</div>}
+                  <button className="btn-primary" onClick={handleOnlineSubmit} disabled={loading}>
+                    {loading ? 'Espera...' : mode === 'login' ? 'Entrar' : 'Registrarme'}
+                  </button>
+                  {mode === 'login' && (
+                    <div style={{ textAlign: 'center', marginTop: 12 }}>
+                      <button
+                        className="btn-media"
+                        style={{ margin: 0, background: 'transparent', color: 'var(--primary-mid)', boxShadow: 'none', fontWeight: 500 }}
+                        onClick={() => {
+                          setShowReset(true);
+                          setError('');
+                        }}
+                      >
+                        ¿Olvidaste tu contraseña?
+                      </button>
+                    </div>
+                  )}
+                </Card>
+                <div style={{ textAlign: 'center', marginTop: 12 }}>
+                  {mode === 'login' ? (
+                    <button className="btn-secondary" style={{ margin: 0 }} onClick={() => switchMode('register')}>
+                      ¿No tienes cuenta? Regístrate
+                    </button>
+                  ) : (
+                    <button className="btn-secondary" style={{ margin: 0 }} onClick={() => switchMode('login')}>
+                      Ya tengo cuenta
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+            {(showReset || false) && (
+              <div style={{ textAlign: 'center', marginTop: 8 }}>
+                <button
+                  className="btn-media"
+                  style={{ margin: 0, background: 'transparent', color: 'var(--grey-dark)', boxShadow: 'none' }}
+                  onClick={() => {
+                    setShowReset(false);
+                    setError('');
+                    setResetMsg('');
+                  }}
+                >
+                  Volver a iniciar sesión
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </>
         ) : (
           <>
