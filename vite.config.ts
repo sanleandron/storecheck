@@ -1,11 +1,34 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { copyFileSync, existsSync } from 'node:fs';
+import { resolve, join } from 'node:path';
 
 // Para GitHub Pages bajo subpath, la app se sirve desde /storecheck/.
 // En local (npm run dev / preview) se sirve desde la raíz.
-// Sobre-escribe con: cross-env BASE_URL=/storecheck/ npm run build  (o edita BASE_URL aquí)
+// Sobre-escribe con: BASE_URL=/storecheck/ npm run build  (variable de entorno)
 const BASE_URL = process.env.BASE_URL || '/';
+
+/**
+ * Genera un 404.html como copia del index.html del build.
+ * GitHub Pages sirve este archivo cuando una ruta interior del SPA no existe
+ * (p. ej. /storecheck/login), permitiendo que React arranque y el router
+ * resuelva la URL. Sin esto, entrar/recargar en una ruta interna da 404.
+ */
+function spa404Fallback(): { name: string; closeBundle: () => void } {
+  return {
+    name: 'spa-404-fallback',
+    closeBundle() {
+      const root = resolve(__dirname);
+      const dist = join(root, 'dist');
+      const index = join(dist, 'index.html');
+      const notFound = join(dist, '404.html');
+      if (existsSync(index)) {
+        copyFileSync(index, notFound);
+      }
+    },
+  };
+}
 
 export default defineConfig({
   base: BASE_URL,
@@ -40,6 +63,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
       },
     }),
+    spa404Fallback(),
   ],
   build: {
     rollupOptions: {
