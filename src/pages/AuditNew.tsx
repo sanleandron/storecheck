@@ -5,6 +5,8 @@ import { Card } from '../components/Card';
 import { CHECKLIST_VERSION, CATALOGOS } from '../data/checklist';
 import { db, generateId } from '../db/dexie';
 import { getSession } from '../lib/auth';
+import { syncAuditWithMedia } from '../lib/sync';
+import { isDbAvailable } from '../db/supabase';
 import type { Audit } from '../types';
 
 export function AuditNew() {
@@ -78,6 +80,13 @@ export function AuditNew() {
       synced: false,
     };
     await db.audits.put(audit);
+    // Offline-first: siempre queda en local. Si hay conexión y sesión, intentamos
+    // sincronizar al momento para que la auditoría llegue a la base sin que el
+    // usuario tenga que volver a la lista (si falla, quedará synced:false y se
+    // subirá luego). No bloqueamos la navegación.
+    if (audit.userId && isDbAvailable()) {
+      void syncAuditWithMedia(audit);
+    }
     navigate(`/auditorias/${audit.id}`);
   };
 
