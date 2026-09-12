@@ -47,11 +47,17 @@ Copia `.env.example` a `.env` y completa los valores. Nunca subas secretos al re
 - **Comparativa de precios** (mínimo 3 observaciones) con precio normalizado por unidad.
 - **Evidencia** de fotos y notas de audio (audio opcional) subida a Supabase Storage.
 - **Guardado automático offline** en IndexedDB (Dexie) y recuperación de borradores.
-- **Sincronización offline-first**: al recuperar conexión, las auditorías y evidencia pendientes se suben a Supabase (idempotente por UUID).
+- **Sincronización offline-first**: al recuperar conexión, las auditorías y evidencia pendientes se suben a Supabase (idempotente por UUID). Al **crear una auditoría con conexión** se sincroniza de inmediato.
 - **Panel administrativo** de validación (En revisión → Validada / Devuelta).
 - **Comparación** de tiendas y **exportación CSV**.
 
-## Despliegue en producción (Netlify + Supabase)
+## Diseño y UX
+
+Interfaz moderna y profesional (paleta propia, tarjetas con elevación, gradientes, micro-interacciones). Verificado de extremo a extremo con navegador real (Playwright + Chrome): registro, login, creación de auditoría y sincronización a Supabase funcionan en producción sin errores de consola. Los scripts de automatización viven en `scripts/browser-*.mjs` y las capturas se guardan en `screenshots-flow/` (fuera de Git).
+
+## Despliegue en producción (GitHub Pages + Supabase)
+
+> La app está publicada en: `https://sanleandron.github.io/storecheck/`
 
 ### 1. Supabase
 - Crea un proyecto en https://supabase.com.
