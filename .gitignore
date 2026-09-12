@@ -24,3 +24,7 @@ npm-debug.log*
 
 # Test / coverage
 coverage
+
+# Artefactos de pruebas de navegador (QA)
+screenshots/
+screenshots-flow/
