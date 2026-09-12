@@ -7,7 +7,8 @@ import { EvidenceCapture } from '../components/EvidenceCapture';
 import { CHECKLIST_VERSION } from '../data/checklist';
 import { db } from '../db/dexie';
 import { sectionProgress, missingRequired } from '../lib/validation';
-import { markAuditDirty } from '../lib/sync';
+import { markAuditDirty, syncAuditWithMedia } from '../lib/sync';
+import { isDbAvailable } from '../db/supabase';
 import type { AuditAnswer } from '../types';
 
 export function ModulePage() {
@@ -53,6 +54,15 @@ export function ModulePage() {
 
   const missing = missingRequired(section.id, audit.answers);
 
+  const handleSaveAndBack = async () => {
+    // Guardamos los cambios locales; si hay conexión y sesión, sincronizamos
+    // en segundo plano para que las respuestas editaron lleguen a Supabase.
+    if (isDbAvailable() && audit.userId) {
+      void syncAuditWithMedia(audit);
+    }
+    navigate(`/auditorias/${audit.id}`);
+  };
+
   return (
     <div className="app-shell">
       <AppHeader title={`${section.order}. ${section.title}`} showBack progress={progress * 100} />
@@ -78,7 +88,7 @@ export function ModulePage() {
             Campos obligatorios pendientes: {missing.join(', ')}
           </div>
         )}
-        <button className="btn-primary" onClick={() => navigate(`/auditorias/${audit.id}`)}>
+        <button className="btn-primary" onClick={handleSaveAndBack}>
           Guardar y Volver
         </button>
       </div>
